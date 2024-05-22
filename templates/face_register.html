@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/face_register.css') }}">
+    {% include 'navbar.html' %}
+</head>
+
+<body>
+    <div class="left"><img draggable="false" class="image" src="{{ url_for('static', filename='images/logo-b.png') }}"
+            alt="logo">
+    </div>
+    <div class="right">
+        <div class="centered">
+            <div class="flex-container centered">
+                {%if message == 1%}
+                <H3>Face is not clear<br></H3>
+                {%endif%}
+
+                <canvas id="canvas">
+                </canvas>
+
+                <button id="stop" onclick="stop()" style="display:none">stop
+                </button>
+
+                <video id="player" autoplay>
+                </video>
+
+                <br>
+
+                <button id="capture" onclick="capture()">
+                    Capture
+                </button>
+
+                <form action="/faceregister" method="post" enctype="multipart/form-data">
+                    <input type="text" id="pic" name="pic" style="display:none">
+
+                    <button id="scan">
+                        Register
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+
+
+<script>
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        alert("Mobile Devices are not currently supported, Please use a computer with camera");
+        window.history.go(-2);
+        console.error('Unsupported Device:', error);
+    }
+    const player = document.getElementById('player');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureButton = document.getElementById('capture');
+    const scan = document.getElementById('scan');
+    const img = document.getElementById('pic');
+
+
+    const vgaconstraints = {
+        video: { width: { exact: 720 }, height: { exact: 480 } },
+    };
+
+    function capture() {
+        canvas.style.position = "relative";
+        canvas.style.left = "0%";
+        canvas.style.top = "0%";
+        canvas.style.width = "720px";
+        canvas.style.height = "480px"
+
+        context.drawImage(player, 0, 0, canvas.width, canvas.height);
+        player.style.display = "none";
+        captureButton.style.display = "none";
+        scan.style.display = "block";
+
+        cap = canvas.toDataURL('image/png').split(",")[1];
+        img.value = cap;
+
+    }
+
+    function stop() {
+        player.srcObject.getVideoTracks().forEach(track => track.stop());
+    }
+
+    navigator.mediaDevices.getUserMedia(vgaconstraints)
+        .then((stream) => {
+            // Attach the video stream to the video element and autoplay.
+            player.srcObject = stream;
+        });
+
+
+
+
+    // Check if the browser supports the navigator.mediaDevices.getUserMedia method
+    navigator.mediaDevices?.getUserMedia({ video: true })?.then(() => console.log('Camera detected!'))
+        .catch((error) => {
+            alert('No camera detected. Please make sure you have a camera connected or enabled.');
+            console.error('No camera detected:', error);
+            window.history.go(-2);
+        });
+
+</script>
+
+
+</html>

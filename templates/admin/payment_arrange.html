@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Arrange</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/payment_arrange.css') }}">
+    {% include 'navbar.html' %}
+</head>
+
+<body>
+    {% if arrange %}
+    <form action="{{ url_for('admin_payment_arranged', id=arrange[2]) }}" method="POST" class="container">
+        <h1>Payment Arrangement</h1>
+        <h3 class="name">Name: {{ arrange[5] }} {{ arrange[3] }}, {{ arrange[4] }}</h3>
+        <span><label for="due">Set deadline this month:</label><input type="date" id="due" name="due"
+                placeholder="Due date" required min="{{ today.strftime('%Y-%m-%d') }}"></span>
+        <span class="currency-code"><label for="amount">Amount:</label>
+            ₱ <input type="text" id="amount" name="amount" placeholder="Amount" value="{{ arrange[0] }}" required />
+        </span>
+        <input type="submit" name="arrange" class="buton remind" value="Remind">
+    </form>
+    {% else %}
+    <script>
+        alert("User ID not found")
+        window.location.href = "{{ url_for('payment_arrange') }}";
+    </script>
+    {% endif %}
+</body>
+
+</html>
+
+
+<script>
+    // Function to add thousand commas to a number
+    function addThousandCommas(number) {
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
+    // Get the input element
+    const amountInput = document.getElementById('amount');
+
+    // Add event listener for input change
+    amountInput.addEventListener('input', function (event) {
+        // Remove commas from the input value
+        let inputValue = event.target.value.replace(/,/g, '');
+        // Add commas back to the input value
+        event.target.value = addThousandCommas(inputValue);
+    });
+
+    // Format the initial value on load
+    amountInput.value = addThousandCommas(amountInput.value);
+</script>
